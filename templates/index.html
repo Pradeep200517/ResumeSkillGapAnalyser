@@ -1,46 +1,487 @@
-<!doctype html>
-<html>
-  <head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resume Skill Gap Analyzer</title>
     <style>
-      body {
-        font-family: Arial;
-        padding: 40px;
-        background: #f5f5f5;
-      }
-      textarea {
-        width: 100%;
-        height: 150px;
-        margin-bottom: 15px;
-      }
-      button {
-        padding: 10px 20px;
-        background: #007bff;
-        color: white;
-        border: none;
-      }
-      .result {
-        margin-top: 20px;
-        background: white;
-        padding: 20px;
-      }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .input-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .input-section:hover {
+            transform: translateY(-5px);
+        }
+        
+        .input-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .analyze-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+        
+        .analyze-btn:active {
+            transform: translateY(0);
+        }
+        
+        .result-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+        
+        .result-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        
+        .result-content {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            white-space: pre-wrap;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .result-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .result-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .result-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        
+        .result-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        .input-method-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .toggle-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .toggle-btn:hover:not(.active) {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #e0e0e0;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .file-upload-area:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+        
+        .file-upload-area.dragover {
+            border-color: #667eea;
+            background: #e3f2fd;
+            transform: scale(1.02);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .file-select-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .file-select-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .file-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        
+        .flash-message {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .flash-message.error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .input-method-toggle {
+                flex-direction: column;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <h2>Resume Skill Gap Analyzer (Gemini AI)</h2>
-
-    <form method="POST">
-      <label>Paste Resume:</label>
-      <textarea name="resume" required></textarea>
-
-      <label>Paste Job Description:</label>
-      <textarea name="jd" required></textarea>
-
-      <button type="submit">Analyze</button>
-    </form>
-
-    <div class="result">
-      <pre>{{ result }}</pre>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Resume Skill Gap Analyzer</h1>
+            <p class="subtitle">Powered by Gemini AI - Compare your resume with job descriptions instantly</p>
+        </header>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <div class="flash-message error">
+                            <span>⚠️</span>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" enctype="multipart/form-data">
+            <div class="main-content">
+                <div class="input-section">
+                    <h2>
+                        <span class="icon">📄</span>
+                        Your Resume
+                    </h2>
+                    
+                    <div class="input-method-toggle">
+                        <button type="button" class="toggle-btn active" data-target="resume-text">📝 Paste Text</button>
+                        <button type="button" class="toggle-btn" data-target="resume-file">📁 Upload File</button>
+                    </div>
+                    
+                    <div class="input-method" id="resume-text">
+                        <textarea name="resume" placeholder="Paste your resume content here... Include your skills, experience, education, and projects.">{{ resume_text }}</textarea>
+                    </div>
+                    
+                    <div class="input-method" id="resume-file" style="display: none;">
+                        <input type="file" id="resume-file-input" name="resume_file" accept=".pdf,.docx,.doc,.txt" style="display: none;">
+                        <div class="file-upload-area" id="resume-drop-zone">
+                            <div class="upload-icon">📁</div>
+                            <p>Drag & drop your resume here or</p>
+                            <button type="button" class="file-select-btn" onclick="document.getElementById('resume-file-input').click()">Browse Files</button>
+                            <p class="file-info">Supported: PDF, DOCX, DOC, TXT (Max 16MB)</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-section">
+                    <h2>
+                        <span class="icon">💼</span>
+                        Job Description
+                    </h2>
+                    
+                    <div class="input-method-toggle">
+                        <button type="button" class="toggle-btn active" data-target="jd-text">📝 Paste Text</button>
+                        <button type="button" class="toggle-btn" data-target="jd-file">📁 Upload File</button>
+                    </div>
+                    
+                    <div class="input-method" id="jd-text">
+                        <textarea name="jd" placeholder="Paste the job description here... Include requirements, responsibilities, and qualifications.">{{ jd_text }}</textarea>
+                    </div>
+                    
+                    <div class="input-method" id="jd-file" style="display: none;">
+                        <input type="file" id="jd-file-input" name="jd_file" accept=".pdf,.docx,.doc,.txt" style="display: none;">
+                        <div class="file-upload-area" id="jd-drop-zone">
+                            <div class="upload-icon">📁</div>
+                            <p>Drag & drop job description here or</p>
+                            <button type="button" class="file-select-btn" onclick="document.getElementById('jd-file-input').click()">Browse Files</button>
+                            <p class="file-info">Supported: PDF, DOCX, DOC, TXT (Max 16MB)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <button type="submit" class="analyze-btn">🔍 Analyze Skill Gap</button>
+            </div>
+        </form>
+        
+        {% if result %}
+        <div class="result-section">
+            <h2>📊 Analysis Results</h2>
+            <div class="result-content">{{ result }}</div>
+        </div>
+        {% endif %}
     </div>
-  </body>
+
+<script>
+    // Toggle between text input and file upload
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle toggle buttons
+        const toggleBtns = document.querySelectorAll('.toggle-btn');
+        
+        toggleBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const target = this.dataset.target;
+                const section = this.closest('.input-section');
+                
+                // Update active button
+                section.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show/hide input methods
+                section.querySelectorAll('.input-method').forEach(method => {
+                    method.style.display = 'none';
+                });
+                document.getElementById(target).style.display = 'block';
+            });
+        });
+
+        // Handle file drop zones
+        setupDropZone('resume-drop-zone', 'resume-file-input');
+        setupDropZone('jd-drop-zone', 'jd-file-input');
+        
+        // Handle file selection display
+        document.getElementById('resume-file-input').addEventListener('change', function(e) {
+            handleFileSelect(e, 'resume-drop-zone');
+        });
+        
+        document.getElementById('jd-file-input').addEventListener('change', function(e) {
+            handleFileSelect(e, 'jd-drop-zone');
+        });
+    });
+
+    function setupDropZone(dropZoneId, fileInputId) {
+        const dropZone = document.getElementById(dropZoneId);
+        const fileInput = document.getElementById(fileInputId);
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.add('dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.remove('dragover');
+            });
+        });
+
+        dropZone.addEventListener('drop', function(e) {
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect({ target: fileInput }, dropZoneId);
+            }
+        });
+    }
+
+    function handleFileSelect(e, dropZoneId) {
+        const file = e.target.files[0];
+        const dropZone = document.getElementById(dropZoneId);
+        
+        if (file) {
+            const fileName = file.name;
+            const fileSize = (file.size / 1024 / 1024).toFixed(2);
+            
+            dropZone.innerHTML = `
+                <div class="upload-icon">✅</div>
+                <p><strong>${fileName}</strong></p>
+                <p>File size: ${fileSize} MB</p>
+                <button type="button" class="file-select-btn" onclick="clearFile('${e.target.id}', '${dropZoneId}')">Remove File</button>
+                <p class="file-info">Click "Analyze Skill Gap" to process this file</p>
+            `;
+        }
+    }
+
+    function clearFile(inputId, dropZoneId) {
+        document.getElementById(inputId).value = '';
+        const dropZone = document.getElementById(dropZoneId);
+        
+        if (dropZoneId === 'resume-drop-zone') {
+            dropZone.innerHTML = `
+                <div class="upload-icon">📁</div>
+                <p>Drag & drop your resume here or</p>
+                <button type="button" class="file-select-btn" onclick="document.getElementById('resume-file-input').click()">Browse Files</button>
+                <p class="file-info">Supported: PDF, DOCX, DOC, TXT (Max 16MB)</p>
+            `;
+        } else {
+            dropZone.innerHTML = `
+                <div class="upload-icon">📁</div>
+                <p>Drag & drop job description here or</p>
+                <button type="button" class="file-select-btn" onclick="document.getElementById('jd-file-input').click()">Browse Files</button>
+                <p class="file-info">Supported: PDF, DOCX, DOC, TXT (Max 16MB)</p>
+            `;
+        }
+    }
+</script>
+</body>
 </html>
