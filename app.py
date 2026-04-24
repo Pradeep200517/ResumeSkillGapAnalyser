@@ -72,25 +72,34 @@ def analyze_resume(resume, jd):
 
     # Prevent multiple rapid calls
     if time.time() - last_call_time < 5:
-        return "⚠️ Please wait 5 seconds before trying again."
+        return {"error": "⚠️ Please wait 5 seconds before trying again."}
 
     last_call_time = time.time()
 
     prompt = f"""
-    Analyze the resume against job description.
-
+    Analyze the following resume against the job description.
+    
     Resume:
     {resume}
 
     Job Description:
     {jd}
 
-    Give output clearly:
-
-    Resume Skills:
-    Job Skills:
-    Missing Skills:
-    Suggestions:
+    Please provide the analysis in the following structured format exactly:
+    
+    [MATCH_SCORE]: (a single number from 0 to 100 representing the percentage match)
+    
+    [RESUME_SKILLS]: (comma-separated list of skills found in the resume)
+    
+    [JOB_SKILLS]: (comma-separated list of skills required by the job)
+    
+    [MISSING_SKILLS]: (comma-separated list of skills missing from the resume but required by the job)
+    
+    [RESUME_OPTIMIZATION]: (3-5 specific bullet points on how to improve the resume content or structure for this specific job)
+    
+    [LEARNING_PATH]: (3-5 specific learning resources or topics for the missing skills)
+    
+    [GENERAL_SUGGESTIONS]: (overall advice for the candidate)
     """
 
     # Retry mechanism
@@ -102,8 +111,24 @@ def analyze_resume(resume, jd):
                 model="gemini-2.0-flash",
                 contents=prompt
             )
-
-            return response.text
+            
+            text = response.text
+            
+            # Simple parsing of structured output
+            data = {}
+            sections = [
+                "[MATCH_SCORE]", "[RESUME_SKILLS]", "[JOB_SKILLS]", 
+                "[MISSING_SKILLS]", "[RESUME_OPTIMIZATION]", 
+                "[LEARNING_PATH]", "[GENERAL_SUGGESTIONS]"
+            ]
+            
+            for i in range(len(sections)):
+                start = text.find(sections[i]) + len(sections[i])
+                end = text.find(sections[i+1]) if i < len(sections)-1 else len(text)
+                if start > len(sections[i]):
+                    data[sections[i].strip("[]")] = text[start:end].strip(": \n")
+            
+            return data
 
         except Exception as e:
             print("ERROR:", e)
@@ -111,9 +136,9 @@ def analyze_resume(resume, jd):
             if "429" in str(e):
                 time.sleep(6)  # wait before retry
             else:
-                return f"⚠️ Error: {str(e)}"
+                return {"error": f"⚠️ Error: {str(e)}"}
 
-    return "⚠️ API busy. Please try after 1 minute."
+    return {"error": "⚠️ API busy. Please try after 1 minute."}
 
 
 @app.route("/", methods=["GET", "POST"])
