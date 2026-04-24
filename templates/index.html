@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Resume Skill Gap Analyzer</title>
+    <style>
+      body {
+        font-family: Arial;
+        padding: 40px;
+        background: #f5f5f5;
+      }
+      textarea {
+        width: 100%;
+        height: 150px;
+        margin-bottom: 15px;
+      }
+      button {
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        border: none;
+      }
+      .result {
+        margin-top: 20px;
+        background: white;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Resume Skill Gap Analyzer (Gemini AI)</h2>
+
+    <form method="POST">
+      <label>Paste Resume:</label>
+      <textarea name="resume" required></textarea>
+
+      <label>Paste Job Description:</label>
+      <textarea name="jd" required></textarea>
+
+      <button type="submit">Analyze</button>
+    </form>
+
+    <div class="result">
+      <pre>{{ result }}</pre>
+    </div>
+  </body>
+</html>
